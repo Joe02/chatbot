@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:speech_to_text/speech_recognition_error.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
@@ -61,9 +62,12 @@ class _MyAppState extends State<MyApp> {
           title: Text("Reconhecimento de Voz"),
           actions: <Widget>[
             InkWell(
-              child: Icon(Icons.headset_mic),
+              child: Padding(
+                padding: const EdgeInsets.only(right: 20.0),
+                child: Icon(Icons.headset_mic),
+              ),
               onTap: () {
-                //TODO Add Text to speech here.
+                _speak();
               },
             )
           ],
@@ -177,7 +181,7 @@ class _MyAppState extends State<MyApp> {
                   onPressed: () {
                     // ignore: unnecessary_statements
                     speech.isListening ? null : startListening();
-                    waitForSpeech(5);
+                    waitForSpeech(60);
                   }),
               RaisedButton(
                   shape: RoundedRectangleBorder(
@@ -222,6 +226,12 @@ class _MyAppState extends State<MyApp> {
   waitForSpeech(int duration) async {
     // do something to wait for 2 seconds
     await Future.delayed(Duration(seconds: duration), () {});
+  }
+
+  Future _speak() async{
+    FlutterTts flutterTts = FlutterTts();
+    flutterTts.setPitch(2);
+    var result = await flutterTts.speak(lastWords);
   }
 
   void startListening() {
