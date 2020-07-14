@@ -230,7 +230,8 @@ class _MyAppState extends State<MyApp> {
 
   Future _speak() async{
     FlutterTts flutterTts = FlutterTts();
-    flutterTts.setPitch(2);
+    flutterTts.setLanguage('pt_BR');
+    flutterTts.setPitch(3);
     var result = await flutterTts.speak(lastWords);
   }
 
