@@ -31,6 +31,9 @@ dependencies:
   googleapis: ^0.53.0
   googleapis_auth: ^0.2.7
 
+  #Atual \/
+  speech_to_text: ^2.3.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
