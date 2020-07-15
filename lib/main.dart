@@ -119,7 +119,7 @@ class _MyAppState extends State<MyApp> {
                                   ? Colors.red
                                   : Colors.white,
                               borderRadius:
-                                  BorderRadius.all(Radius.circular(50)),
+                              BorderRadius.all(Radius.circular(50)),
                             ),
                             child: IconButton(
                               icon: Icon(
@@ -153,10 +153,10 @@ class _MyAppState extends State<MyApp> {
                       items: _localeNames
                           .map(
                             (localeName) => DropdownMenuItem(
-                              value: localeName.localeId,
-                              child: Text(localeName.name),
-                            ),
-                          )
+                          value: localeName.localeId,
+                          child: Text(localeName.name),
+                        ),
+                      )
                           .toList(),
                     ),
                   ],
