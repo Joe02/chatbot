@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:chatbot/pages/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:speech_to_text/speech_recognition_error.dart';
@@ -72,153 +73,154 @@ class _MyAppState extends State<MyApp> {
             )
           ],
         ),
-        body: Column(children: [
-          Expanded(
-            flex: 4,
-            child: Column(
-              children: <Widget>[
-                Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      speech.isListening
-                          ? "Escutando.."
-                          : "Pressione 'Gravar' para começar",
-                      style: TextStyle(fontSize: 22.0),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Stack(
-                    children: <Widget>[
-                      Container(
-                        color: Theme.of(context).selectedRowColor,
-                        child: Center(
-                          child: Text(
-                            lastWords,
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ),
-                      Positioned.fill(
-                        bottom: 10,
-                        child: Align(
-                          alignment: Alignment.bottomCenter,
-                          child: Container(
-                            width: 40,
-                            height: 40,
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              boxShadow: [
-                                BoxShadow(
-                                    blurRadius: .26,
-                                    spreadRadius: level * 1.5,
-                                    color: Colors.black.withOpacity(.05))
-                              ],
-                              color: speech.isListening
-                                  ? Colors.red
-                                  : Colors.white,
-                              borderRadius:
-                              BorderRadius.all(Radius.circular(50)),
-                            ),
-                            child: IconButton(
-                              icon: Icon(
-                                Icons.mic,
-                                color: speech.isListening
-                                    ? Colors.white
-                                    : Colors.black,
-                              ),
-                              onPressed: () {
-                                startListening();
-                              },
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Container(
-            child: Column(
-              children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
-                    DropdownButton(
-                      onChanged: (selectedVal) => _switchLang(selectedVal),
-                      value: _currentLocaleId,
-                      items: _localeNames
-                          .map(
-                            (localeName) => DropdownMenuItem(
-                          value: localeName.localeId,
-                          child: Text(localeName.name),
-                        ),
-                      )
-                          .toList(),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: <Widget>[
-              RaisedButton(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(8))),
-                  color: Colors.deepPurple,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      'Gravar',
-                      style: TextStyle(color: Colors.white, fontSize: 19),
-                    ),
-                  ),
-                  onPressed: () {
-                    // ignore: unnecessary_statements
-                    speech.isListening ? null : startListening();
-                    waitForSpeech(60);
-                  }),
-              RaisedButton(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(8))),
-                  color: Colors.deepPurple,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      'Parar',
-                      style: TextStyle(color: Colors.white, fontSize: 19),
-                    ),
-                  ),
-                  onPressed: () {
-                    // ignore: unnecessary_statements
-                    !_hasSpeech || speech.isListening ? stopListening : null;
-                  }),
-              RaisedButton(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(8))),
-                  color: Colors.deepPurple,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      'Cancelar',
-                      style: TextStyle(color: Colors.white, fontSize: 19),
-                    ),
-                  ),
-                  onPressed: () {
-                    // ignore: unnecessary_statements
-                    !_hasSpeech || speech.isListening ? cancelListening : null;
-                  }),
-            ],
-          ),
-          SizedBox(
-            height: 20,
-          )
-        ]),
+        body: HomePage(),
+//        Column(children: [
+//          Expanded(
+//            flex: 4,
+//            child: Column(
+//              children: <Widget>[
+//                Center(
+//                  child: Padding(
+//                    padding: const EdgeInsets.all(8.0),
+//                    child: Text(
+//                      speech.isListening
+//                          ? "Escutando.."
+//                          : "Pressione 'Gravar' para começar",
+//                      style: TextStyle(fontSize: 22.0),
+//                    ),
+//                  ),
+//                ),
+//                Expanded(
+//                  child: Stack(
+//                    children: <Widget>[
+//                      Container(
+//                        color: Theme.of(context).selectedRowColor,
+//                        child: Center(
+//                          child: Text(
+//                            lastWords,
+//                            textAlign: TextAlign.center,
+//                          ),
+//                        ),
+//                      ),
+//                      Positioned.fill(
+//                        bottom: 10,
+//                        child: Align(
+//                          alignment: Alignment.bottomCenter,
+//                          child: Container(
+//                            width: 40,
+//                            height: 40,
+//                            alignment: Alignment.center,
+//                            decoration: BoxDecoration(
+//                              boxShadow: [
+//                                BoxShadow(
+//                                    blurRadius: .26,
+//                                    spreadRadius: level * 1.5,
+//                                    color: Colors.black.withOpacity(.05))
+//                              ],
+//                              color: speech.isListening
+//                                  ? Colors.red
+//                                  : Colors.white,
+//                              borderRadius:
+//                              BorderRadius.all(Radius.circular(50)),
+//                            ),
+//                            child: IconButton(
+//                              icon: Icon(
+//                                Icons.mic,
+//                                color: speech.isListening
+//                                    ? Colors.white
+//                                    : Colors.black,
+//                              ),
+//                              onPressed: () {
+//                                startListening();
+//                              },
+//                            ),
+//                          ),
+//                        ),
+//                      ),
+//                    ],
+//                  ),
+//                ),
+//              ],
+//            ),
+//          ),
+//          Container(
+//            child: Column(
+//              children: <Widget>[
+//                Row(
+//                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+//                  children: <Widget>[
+//                    DropdownButton(
+//                      onChanged: (selectedVal) => _switchLang(selectedVal),
+//                      value: _currentLocaleId,
+//                      items: _localeNames
+//                          .map(
+//                            (localeName) => DropdownMenuItem(
+//                          value: localeName.localeId,
+//                          child: Text(localeName.name),
+//                        ),
+//                      )
+//                          .toList(),
+//                    ),
+//                  ],
+//                ),
+//              ],
+//            ),
+//          ),
+//          Row(
+//            mainAxisAlignment: MainAxisAlignment.spaceAround,
+//            children: <Widget>[
+//              RaisedButton(
+//                  shape: RoundedRectangleBorder(
+//                      borderRadius: BorderRadius.all(Radius.circular(8))),
+//                  color: Colors.deepPurple,
+//                  child: Padding(
+//                    padding: const EdgeInsets.all(8.0),
+//                    child: Text(
+//                      'Gravar',
+//                      style: TextStyle(color: Colors.white, fontSize: 19),
+//                    ),
+//                  ),
+//                  onPressed: () {
+//                    // ignore: unnecessary_statements
+//                    speech.isListening ? null : startListening();
+//                    waitForSpeech(60);
+//                  }),
+//              RaisedButton(
+//                  shape: RoundedRectangleBorder(
+//                      borderRadius: BorderRadius.all(Radius.circular(8))),
+//                  color: Colors.deepPurple,
+//                  child: Padding(
+//                    padding: const EdgeInsets.all(8.0),
+//                    child: Text(
+//                      'Parar',
+//                      style: TextStyle(color: Colors.white, fontSize: 19),
+//                    ),
+//                  ),
+//                  onPressed: () {
+//                    // ignore: unnecessary_statements
+//                    !_hasSpeech || speech.isListening ? stopListening : null;
+//                  }),
+//              RaisedButton(
+//                  shape: RoundedRectangleBorder(
+//                      borderRadius: BorderRadius.all(Radius.circular(8))),
+//                  color: Colors.deepPurple,
+//                  child: Padding(
+//                    padding: const EdgeInsets.all(8.0),
+//                    child: Text(
+//                      'Cancelar',
+//                      style: TextStyle(color: Colors.white, fontSize: 19),
+//                    ),
+//                  ),
+//                  onPressed: () {
+//                    // ignore: unnecessary_statements
+//                    !_hasSpeech || speech.isListening ? cancelListening : null;
+//                  }),
+//            ],
+//          ),
+//          SizedBox(
+//            height: 20,
+//          )
+//        ]),
       ),
     );
   }

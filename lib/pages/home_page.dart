@@ -1,8 +1,11 @@
+import 'dart:math';
+
 import 'package:chatbot/models/chat_message.dart';
 import 'package:chatbot/widgets/chat_message_list_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dialogflow/dialogflow_v2.dart';
 import 'package:speech_to_text/speech_recognition_error.dart';
+import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
 class HomePage extends StatefulWidget {
@@ -56,6 +59,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    initSpeechState();
     return Scaffold(
       body: Column(
         children: <Widget>[
@@ -137,16 +141,65 @@ class _HomePageState extends State<HomePage> {
 
   // Botão para enviar a mensagem
   Widget _buildSendButton() {
-    return new Container(
-      margin: new EdgeInsets.only(left: 8.0),
-      child: new IconButton(
-          icon: new Icon(Icons.send, color: Theme.of(context).accentColor),
-          onPressed: () {
-            if (_controllerText.text.isNotEmpty) {
-              _sendMessage(text: _controllerText.text);
-            }
-          }),
+    return Row(
+      children: <Widget>[
+        InkWell(
+          onTap: () {
+            // ignore: unnecessary_statements
+            speech.isListening ? null : startListening();
+            waitForSpeech(60);
+          },
+          child: Padding(
+              padding: const EdgeInsets.all(8.0), child: Icon(Icons.mic)),
+        ),
+        Container(
+          margin: new EdgeInsets.only(left: 8.0),
+          child: new IconButton(
+              icon: new Icon(Icons.send, color: Theme.of(context).accentColor),
+              onPressed: () {
+                if (_controllerText.text.isNotEmpty) {
+                  _sendMessage(text: _controllerText.text);
+                }
+              }),
+        )
+      ],
     );
+  }
+
+  void startListening() {
+    lastWords = "";
+    lastError = "";
+    speech.listen(
+        onResult: resultListener,
+        listenFor: Duration(seconds: 10),
+        localeId: _currentLocaleId,
+        onSoundLevelChange: soundLevelListener,
+        cancelOnError: true,
+        partialResults: true,
+        onDevice: true,
+        listenMode: ListenMode.confirmation);
+    setState(() {});
+  }
+
+  void resultListener(SpeechRecognitionResult result) {
+    setState(() {
+      lastWords = "${result.recognizedWords}";
+      _controllerText.text = lastWords;
+    });
+  }
+
+  void soundLevelListener(double level) {
+    minSoundLevel = min(minSoundLevel, level);
+    maxSoundLevel = max(maxSoundLevel, level);
+    // print("sound level $level: $minSoundLevel - $maxSoundLevel ");
+    setState(() {
+      this.level = level;
+    });
+  }
+
+  waitForSpeech(int duration) async {
+    // do something to wait for 2 seconds
+    await Future.delayed(Duration(seconds: duration), () {});
   }
 
   // Monta uma linha com o campo de text e o botão de enviao
