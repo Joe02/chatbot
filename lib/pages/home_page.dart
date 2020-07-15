@@ -4,6 +4,7 @@ import 'package:chatbot/models/chat_message.dart';
 import 'package:chatbot/widgets/chat_message_list_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dialogflow/dialogflow_v2.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:speech_to_text/speech_recognition_error.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
@@ -125,6 +126,12 @@ class _HomePageState extends State<HomePage> {
         name: 'Bot de mensagem',
         text: response.getMessage() ?? '',
         type: ChatMessageType.received);
+
+      FlutterTts flutterTts = FlutterTts();
+      flutterTts.setLanguage('pt_BR');
+      flutterTts.setPitch(3);
+      var result = await flutterTts.speak(response.getMessage());
+
   }
 
   // Campo para escrever a mensagem
