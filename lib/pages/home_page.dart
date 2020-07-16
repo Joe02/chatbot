@@ -24,6 +24,8 @@ class _HomePageState extends State<HomePage> {
     _controllerText.dispose();
   }
 
+  // ------------------------- VOICE VARIABLES ------------------------- //
+
   bool _hasSpeech = false;
   double level = 0.0;
   double minSoundLevel = 50000;
@@ -35,27 +37,12 @@ class _HomePageState extends State<HomePage> {
   List<LocaleName> _localeNames = [];
   final SpeechToText speech = SpeechToText();
 
+  // ------------------------------------------------------------------- //
+
   @override
   void initState() {
     super.initState();
     initSpeechState();
-  }
-
-  Future<void> initSpeechState() async {
-    bool hasSpeech = await speech.initialize(
-        onError: errorListener, onStatus: statusListener);
-    if (hasSpeech) {
-      _localeNames = await speech.locales();
-
-      var systemLocale = await speech.systemLocale();
-      _currentLocaleId = systemLocale.localeId;
-    }
-
-    if (!mounted) return;
-
-    setState(() {
-      _hasSpeech = hasSpeech;
-    });
   }
 
   @override
@@ -72,7 +59,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // Cria a lista de mensagens (de baixo para cima)
   Widget _buildList() {
     return Flexible(
       child: ListView.builder(
@@ -84,13 +70,11 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // Envia uma mensagem com o padrão a direita
   void _sendMessage({String text}) {
     _controllerText.clear();
-    _addMessage(name: 'Dragão de Komoido :3', text: text, type: ChatMessageType.sent);
+    _addMessage(name: 'Usuário', text: text, type: ChatMessageType.sent);
   }
 
-  // Adiciona uma mensagem na lista de mensagens
   void _addMessage({String name, String text, ChatMessageType type}) {
     var message = ChatMessage(
         text: text, name: name, type: type);
@@ -99,42 +83,10 @@ class _HomePageState extends State<HomePage> {
     });
 
     if (type == ChatMessageType.sent) {
-      // Envia a mensagem para o chatbot e aguarda sua resposta
       _dialogFlowRequest(query: message.text);
     }
   }
 
-  Future _dialogFlowRequest({String query}) async {
-    // Adiciona uma mensagem temporária na lista
-    _addMessage(
-        name: 'Bot de mensagem',
-        text: 'Escrevendo...',
-        type: ChatMessageType.received);
-
-    // Faz a autenticação com o serviço, envia a mensagem e recebe uma resposta da Intent
-    AuthGoogle authGoogle = await AuthGoogle(fileJson: "assets/credentials.json").build();
-    Dialogflow dialogflow = Dialogflow(authGoogle: authGoogle, language: "pt-BR");
-    AIResponse response = await dialogflow.detectIntent(query);
-
-    // remove a mensagem temporária
-    setState(() {
-      _messageList.removeAt(0);
-    });
-
-    // adiciona a mensagem com a resposta do DialogFlow
-    _addMessage(
-        name: 'Bot de mensagem',
-        text: response.getMessage() ?? '',
-        type: ChatMessageType.received);
-
-      FlutterTts flutterTts = FlutterTts();
-      flutterTts.setLanguage('pt_BR');
-      flutterTts.setPitch(3);
-      var result = await flutterTts.speak(response.getMessage());
-
-  }
-
-  // Campo para escrever a mensagem
   Widget _buildTextField() {
     return new Flexible(
       child: new TextField(
@@ -173,6 +125,70 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  // Monta uma linha com o campo de text e o botão de enviao
+  Widget _buildUserInput() {
+    return Container(
+      color: Colors.white,
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      child: new Row(
+        children: <Widget>[
+          _buildTextField(),
+          _buildSendButton(),
+        ],
+      ),
+    );
+  }
+
+  // ------------------------- BEGINNING VOICE ------------------------- //
+
+  //Initialize stt recognition.
+  Future<void> initSpeechState() async {
+    bool hasSpeech = await speech.initialize(
+        onError: errorListener, onStatus: statusListener);
+    if (hasSpeech) {
+      _localeNames = await speech.locales();
+
+      var systemLocale = await speech.systemLocale();
+      _currentLocaleId = systemLocale.localeId;
+    }
+
+    if (!mounted) return;
+
+    setState(() {
+      _hasSpeech = hasSpeech;
+    });
+  }
+
+  //Sends user message to dialogFlow and gets it's reply.
+  Future _dialogFlowRequest({String query}) async {
+    _addMessage(
+        name: 'Bot de mensagem',
+        text: 'Escrevendo...',
+        type: ChatMessageType.received);
+
+    AuthGoogle authGoogle = await AuthGoogle(fileJson: "assets/credentials.json").build();
+    Dialogflow dialogflow = Dialogflow(authGoogle: authGoogle, language: "pt-BR");
+    AIResponse response = await dialogflow.detectIntent(query);
+
+    setState(() {
+      _messageList.removeAt(0);
+    });
+
+    _addMessage(
+        name: 'Bot de mensagem',
+        text: response.getMessage() ?? '',
+        type: ChatMessageType.received);
+
+    FlutterTts flutterTts = FlutterTts();
+    flutterTts.setLanguage('pt_BR');
+    flutterTts.setPitch(3);
+
+    //tts the response message.
+    var result = await flutterTts.speak(response.getMessage());
+
+  }
+
+  //Starts to listen to device's microphone
   void startListening() {
     lastWords = "";
     lastError = "";
@@ -188,6 +204,7 @@ class _HomePageState extends State<HomePage> {
     setState(() {});
   }
 
+  //Sets the result text from listening to lastWords.
   void resultListener(SpeechRecognitionResult result) {
     setState(() {
       lastWords = "${result.recognizedWords}";
@@ -195,6 +212,7 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  //Sound level configuration.
   void soundLevelListener(double level) {
     minSoundLevel = min(minSoundLevel, level);
     maxSoundLevel = max(maxSoundLevel, level);
@@ -204,25 +222,12 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  //Delay to wait for user's voice recognition
   waitForSpeech(int duration) async {
-    // do something to wait for 2 seconds
     await Future.delayed(Duration(seconds: duration), () {});
   }
 
-  // Monta uma linha com o campo de text e o botão de enviao
-  Widget _buildUserInput() {
-    return Container(
-      color: Colors.white,
-      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-      child: new Row(
-        children: <Widget>[
-          _buildTextField(),
-          _buildSendButton(),
-        ],
-      ),
-    );
-  }
-
+  //On recognition error.
   void errorListener(SpeechRecognitionError error) {
     // print("Received error status: $error, listening: ${speech.isListening}");
     setState(() {
@@ -230,11 +235,12 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  //Sets recognition status.
   void statusListener(String status) {
-    // print(
-    // "Received listener status: $status, listening: ${speech.isListening}");
     setState(() {
       lastStatus = "$status";
     });
   }
+
+  // ------------------------- END VOICE ------------------------- //
 }
