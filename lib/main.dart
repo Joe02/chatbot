@@ -1,4 +1,4 @@
-import 'package:chatbot/widgets/audio_recognition_chat.dart';
+import 'package:chatbot/pages/audio_test_page.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(MyApp());
@@ -16,11 +16,7 @@ class _MyAppState extends State<MyApp> {
         primaryColor: Colors.deepPurple,
       ),
       home: Scaffold(
-        appBar: AppBar(
-          title: Text("Reconhecimento de Voz"),
-        ),
-        body: HomePage(),
-      ),
+          body: AudioTestPage()),
     );
   }
 }

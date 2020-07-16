@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:chatbot/models/chat_message.dart';
+import 'package:chatbot/pages/audio_test_page.dart';
 import 'package:chatbot/widgets/chat_message_list_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dialogflow/dialogflow_v2.dart';
@@ -9,12 +10,13 @@ import 'package:speech_to_text/speech_recognition_error.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
-class HomePage extends StatefulWidget {
+class AudioRecognitionChatPage extends StatefulWidget {
   @override
-  _HomePageState createState() => _HomePageState();
+  _AudioRecognitionChatPageState createState() =>
+      _AudioRecognitionChatPageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _AudioRecognitionChatPageState extends State<AudioRecognitionChatPage> {
   final _messageList = <ChatMessage>[];
   final _controllerText = new TextEditingController();
 
@@ -49,6 +51,15 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     initSpeechState();
     return Scaffold(
+      appBar: AppBar(
+          title: Text("Tela de chat"),
+          leading: InkWell(
+            onTap: () {
+              Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => AudioTestPage()));
+            },
+            child: Icon(Icons.arrow_back),
+          )),
       body: Column(
         children: <Widget>[
           _buildList(),
@@ -184,7 +195,7 @@ class _HomePageState extends State<HomePage> {
     flutterTts.setPitch(3);
 
     //tts the response message.
-    var result = await flutterTts.speak(response.getMessage());
+    await flutterTts.speak(response.getMessage());
 
   }
 
