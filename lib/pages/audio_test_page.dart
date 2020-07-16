@@ -12,7 +12,6 @@ class AudioTestPage extends StatefulWidget {
 
 class AudioTestPageState extends State<AudioTestPage> {
   TextEditingController _textController = TextEditingController();
-  bool _worked = false;
   var helper = AudioRecognitionHelper();
 
   @override
@@ -45,7 +44,7 @@ class AudioTestPageState extends State<AudioTestPage> {
           child: TextField(
             controller: _textController,
             decoration: InputDecoration(
-                hintText: _worked ? "Deu certo" : "Não rolou",
+              hintText: "Clique no microfone e fale algo.",
                 suffixIcon: InkWell(
                   onTap: () {
                     getsAudioResponse();
@@ -58,26 +57,31 @@ class AudioTestPageState extends State<AudioTestPage> {
     );
   }
 
+  //Listens to user audio
   getsAudioResponse() async {
     helper.startListening();
+
+    //While the user's words == null
     while (helper.lastWords == "") {
       await Future.delayed(Duration(seconds: 1));
     }
+
+    //Once the user say something :
     setState(() {
       _textController.text = helper.lastWords;
-      _worked = true;
     });
+
+    //Dialog flow request for Dialog flow response via tts.
     _dialogFlowRequest(query: _textController.text);
   }
 
   //Sends user message to dialogFlow and gets it's reply.
   _dialogFlowRequest({String query}) async {
-    AuthGoogle authGoogle =
-        await AuthGoogle(fileJson: "assets/credentials.json").build();
-    Dialogflow dialogflow =
-        Dialogflow(authGoogle: authGoogle, language: "pt-BR");
+    AuthGoogle authGoogle = await AuthGoogle(fileJson: "assets/credentials.json").build();
+    Dialogflow dialogflow = Dialogflow(authGoogle: authGoogle, language: "pt-BR");
     AIResponse response = await dialogflow.detectIntent(query);
 
+    //Configures flutterTts
     FlutterTts flutterTts = FlutterTts();
     flutterTts.setLanguage('pt_BR');
     flutterTts.setPitch(3);
